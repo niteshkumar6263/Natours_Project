@@ -1,0 +1,13 @@
+->  bcryptjs package used for the hashing the password, its an async function
+
+->  jwt verification uses callback function because of this use promisify
+    which converts the callfunction the async/await function which returns a promise object
+
+->  while Querying or Executing Query it may be possible to examine the database 
+    for thousands of result, to optimise this we use the indexing (Mongoose use Balance Tree(B - tree))
+
+->  mixins (use the reusable code)
+->  logout method is simply override the cookie without token
+
+->  urlencoded is the inbuild middleware, which is used to parse the html form format
+    to json data
