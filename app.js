@@ -31,7 +31,6 @@ app.use(
     directives: {
       defaultSrc: ["'self'"],
       baseUri: ["'self'"],
-
       fontSrc: ["'self'", 'https://fonts.gstatic.com', 'data:'],
 
       styleSrc: ["'self'", "'unsafe-inline'", 'https://fonts.googleapis.com'],
