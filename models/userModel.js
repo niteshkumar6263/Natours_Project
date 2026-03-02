@@ -6,40 +6,43 @@ const bcrypt = require('bcryptjs');
 const userSchema = new mongoose.Schema({
   name: {
     type: String,
-    required: [true, 'Please tell us your name!']
+    required: [true, 'Please tell us your name!'],
   },
   email: {
     type: String,
     required: [true, 'Please provide your email'],
     unique: true,
     lowercase: true,
-    validate: [validator.isEmail, 'Please provide a valid email']
+    validate: [validator.isEmail, 'Please provide a valid email'],
   },
   photo: {
     type: String,
-    default: 'default.jpg'
+    default:
+      'https://res.cloudinary.com/doklx3axd/image/upload/v1772445965/default_oim9am.jpg',
+  },
+  photoPublicId: {
+    type: String,
   },
   role: {
     type: String,
     enum: ['user', 'guide', 'lead-guide', 'admin'],
-    default: 'user'
+    default: 'user',
   },
   password: {
     type: String,
     required: [true, 'Please provide a password'],
     minlength: 8,
-    select: false
+    select: false,
   },
   passwordConfirm: {
     type: String,
     required: [true, 'Please confirm your password'],
     validate: {
-      // This only works on CREATE and SAVE!!!
       validator: function(el) {
         return el === this.password;
       },
-      message: 'Passwords are not the same!'
-    }
+      message: 'Passwords are not the same!',
+    },
   },
   passwordChangedAt: Date,
   passwordResetToken: String,
@@ -47,33 +50,25 @@ const userSchema = new mongoose.Schema({
   active: {
     type: Boolean,
     default: true,
-    select: false
-  }
+    select: false,
+  },
 });
 
-userSchema.pre('save', async function(next) {
-  // Only run this function if password was actually modified
-  if (!this.isModified('password')) return next();
+userSchema.pre('save', async function() {
+  if (!this.isModified('password')) return;
 
-  // Hash the password with cost of 12
   this.password = await bcrypt.hash(this.password, 12);
 
-  // Delete passwordConfirm field
   this.passwordConfirm = undefined;
-  next();
 });
 
-userSchema.pre('save', function(next) {
-  if (!this.isModified('password') || this.isNew) return next();
-
+userSchema.pre('save', function() {
+  if (!this.isModified('password') || this.isNew) return;
   this.passwordChangedAt = Date.now() - 1000;
-  next();
 });
 
-userSchema.pre(/^find/, function(next) {
-  // this points to the current query
+userSchema.pre(/^find/, function() {
   this.find({ active: { $ne: false } });
-  next();
 });
 
 userSchema.methods.correctPassword = async function(
@@ -93,7 +88,6 @@ userSchema.methods.changedPasswordAfter = function(JWTTimestamp) {
     return JWTTimestamp < changedTimestamp;
   }
 
-  // False means NOT changed
   return false;
 };
 

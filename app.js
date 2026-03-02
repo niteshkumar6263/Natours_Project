@@ -25,7 +25,34 @@ app.set('views', path.join(__dirname, 'views'));
 app.use(express.static(path.join(__dirname, 'public')));
 
 // Set security HTTP headers
-app.use(helmet());
+// app.use(helmet());
+app.use(
+  helmet.contentSecurityPolicy({
+    directives: {
+      defaultSrc: ["'self'"],
+      baseUri: ["'self'"],
+
+      fontSrc: ["'self'", 'https://fonts.gstatic.com', 'data:'],
+
+      styleSrc: ["'self'", "'unsafe-inline'", 'https://fonts.googleapis.com'],
+
+      scriptSrc: ["'self'", 'https://js.stripe.com'],
+
+      frameSrc: ["'self'", 'https://js.stripe.com'],
+
+      connectSrc: [
+        "'self'",
+        'https://api.stripe.com',
+        'ws://localhost:*',
+        'ws://127.0.0.1:*',
+        'http://localhost:*',
+        'http://127.0.0.1:*',
+      ],
+
+      imgSrc: ["'self'", 'data:', 'blob:', 'https://res.cloudinary.com'],
+    },
+  })
+);
 
 // Development logging
 if (process.env.NODE_ENV === 'development') {
@@ -78,9 +105,9 @@ app.use('/api/v1/tours', tourRouter);
 app.use('/api/v1/users', userRouter);
 app.use('/api/v1/reviews', reviewRouter);
 
-app.all('*', (req, res, next) => {
-  next(new AppError(`Can't find ${req.originalUrl} on this server!`, 404));
-});
+// app.all('*', (req, res, next) => {
+//   next(new AppError(`Can't find ${req.originalUrl} on this server!`, 404));
+// });
 
 app.use(globalErrorHandler);
 

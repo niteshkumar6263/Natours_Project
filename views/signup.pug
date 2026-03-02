@@ -1,0 +1,36 @@
+extends base
+
+block content
+  main.main
+    .signup-form
+      h2.heading-secondary.ma-bt-lg Sign up for your account
+      form.form.form--signup
+        .form__group
+          label.form__label(for='name') Name
+          input#name.form__input(type='text', placeholder='Your Name', required)
+
+        .form__group
+          label.form__label(for='email') Email address
+          input#email.form__input(type='email', placeholder='you@example.com', required)
+
+        .form__group.ma-bt-md
+          label.form__label(for='password') Password
+          .form__input-wrapper
+            input#password.form__input(type='password', placeholder='••••••••', required, minlength='8')
+            button.toggle-password(type='button', data-target='password')
+              svg(width='20' height='20' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2')
+                path(d='M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z')
+                circle(cx='12' cy='12' r='3')
+                line.slash(x1='4' y1='4' x2='20' y2='20' style='display:none')
+
+        .form__group.ma-bt-md
+          label.form__label(for='passwordConfirm') Confirm Password
+          .form__input-wrapper
+            input#passwordConfirm.form__input(type='password', placeholder='••••••••', required, minlength='8')
+            button.toggle-password(type='button', data-target='passwordConfirm')
+              svg(width='20' height='20' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2')
+                path(d='M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z')
+                circle(cx='12' cy='12' r='3')
+                line.slash(x1='4' y1='4' x2='20' y2='20' style='display:none')
+        .form__group
+          button.btn.btn--green Sign Up

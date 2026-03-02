@@ -35,16 +35,17 @@ block content
           
           //- WITH API
           form.form.form-user-data
+            .form__group.form__photo-upload
+              //- img.form__user-photo(src=`/img/users/${user.photo}`, alt='User photo')
+              img.form__user-photo(src=user.photo, alt='User photo')
+              input.form__upload(type='file', accept='image/*', id='photo', name='photo')
+              label(for='photo') Choose new photo
             .form__group
               label.form__label(for='name') Name
               input#name.form__input(type='text', value=`${user.name}`, required, name='name')
             .form__group.ma-bt-md
               label.form__label(for='email') Email address
               input#email.form__input(type='email', value=`${user.email}`, required, name='email')
-            .form__group.form__photo-upload
-              img.form__user-photo(src=`/img/users/${user.photo}`, alt='User photo')
-              input.form__upload(type='file', accept='image/*', id='photo', name='photo')
-              label(for='photo') Choose new photo
               
             .form__group.right
               button.btn.btn--small.btn--green Save settings
@@ -56,12 +57,30 @@ block content
           form.form.form-user-password
             .form__group
               label.form__label(for='password-current') Current password
-              input#password-current.form__input(type='password', placeholder='••••••••', required, minlength='8')
+              .form__input-wrapper
+                input#password-current.form__input(type='password', placeholder='••••••••', required, minlength='8')
+                button.toggle-password(type='button', data-target='password-current')
+                  svg(width='20' height='20' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2')
+                    path(d='M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z')
+                    circle(cx='12' cy='12' r='3')
+                    line.slash(x1='4' y1='4' x2='20' y2='20' style='display:none')
             .form__group
               label.form__label(for='password') New password
-              input#password.form__input(type='password', placeholder='••••••••', required, minlength='8')
+              .form__input-wrapper
+                input#password.form__input(type='password', placeholder='••••••••', required, minlength='8')
+                button.toggle-password(type='button', data-target='password')
+                    svg(width='20' height='20' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2')
+                      path(d='M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z')
+                      circle(cx='12' cy='12' r='3')
+                      line.slash(x1='4' y1='4' x2='20' y2='20' style='display:none')
             .form__group.ma-bt-lg
               label.form__label(for='password-confirm') Confirm password
-              input#password-confirm.form__input(type='password', placeholder='••••••••', required, minlength='8')
+              .form__input-wrapper
+                input#password-confirm.form__input(type='password', placeholder='••••••••', required, minlength='8')
+                button.toggle-password(type='button', data-target='password-confirm')
+                    svg(width='20' height='20' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2')
+                      path(d='M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z')
+                      circle(cx='12' cy='12' r='3')
+                      line.slash(x1='4' y1='4' x2='20' y2='20' style='display:none')
             .form__group.right
               button.btn.btn--small.btn--green.btn--save-password Save password
