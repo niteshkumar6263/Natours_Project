@@ -21,7 +21,7 @@ export const signup = async (name, email, password, passwordConfirm) => {
         'Signed up successfully!\nUse login credentials to log in.'
       );
       window.setTimeout(() => {
-        location.assign('/');
+        location.assign('//api/v1/users/login');
       }, 2000);
     }
   } catch (err) {
