@@ -16,7 +16,10 @@ const userRouter = require('./routes/userRoutes');
 const reviewRouter = require('./routes/reviewRoutes');
 const viewRouter = require('./routes/viewRoutes');
 const compression = require('compression');
+const { isLoggedIn } = require('./controllers/authController');
 const app = express();
+
+app.enable('trust proxy');
 
 app.set('view engine', 'pug');
 app.set('views', path.join(__dirname, 'views'));
@@ -71,7 +74,6 @@ app.use('/api', limiter);
 app.use(express.json({ limit: '10kb' }));
 app.use(express.urlencoded({ extended: true, limit: '10kb' }));
 app.use(cookieParser());
-
 // Data sanitization against NoSQL query injection
 app.use(mongoSanitize());
 
@@ -100,6 +102,7 @@ app.use((req, res, next) => {
   next();
 });
 
+app.use(isLoggedIn);
 // 3) ROUTES
 app.use('/', viewRouter);
 app.use('/api/v1/tours', tourRouter);

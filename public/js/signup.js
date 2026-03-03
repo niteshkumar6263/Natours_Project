@@ -7,6 +7,7 @@ export const signup = async (name, email, password, passwordConfirm) => {
     const res = await axios({
       method: 'POST',
       url: '/api/v1/users/signup',
+      withCredentials: true,
       data: {
         name,
         email,
@@ -15,7 +16,10 @@ export const signup = async (name, email, password, passwordConfirm) => {
       },
     });
     if (res.data.status === 'success') {
-      showAlert('success', 'Signed up successfully!');
+      showAlert(
+        'success',
+        'Signed up successfully!\nUse login credentials to log in.'
+      );
       window.setTimeout(() => {
         location.assign('/');
       }, 1000);
