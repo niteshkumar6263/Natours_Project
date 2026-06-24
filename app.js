@@ -46,10 +46,12 @@ app.use(
       connectSrc: [
         "'self'",
         'https://api.stripe.com',
+        'https://natours-project-2-ihkw.onrender.com',
         'ws://localhost:*',
         'ws://127.0.0.1:*',
         'http://localhost:*',
         'http://127.0.0.1:*',
+        
       ],
 
       imgSrc: ["'self'", 'data:', 'blob:', 'https://res.cloudinary.com'],
