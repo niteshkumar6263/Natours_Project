@@ -14,48 +14,89 @@ const globalErrorHandler = require('./controllers/errorController');
 const tourRouter = require('./routes/tourRoutes');
 const userRouter = require('./routes/userRoutes');
 const reviewRouter = require('./routes/reviewRoutes');
+const bookingRouter = require('./routes/bookingRoutes');
 const viewRouter = require('./routes/viewRoutes');
 const compression = require('compression');
 const { isLoggedIn } = require('./controllers/authController');
+const {
+  envList,
+  getCorsOrigins,
+  getStripePublishableKey,
+  isProduction,
+} = require('./utils/env');
 const app = express();
 
-app.enable('trust proxy');
+app.set('trust proxy', 1);
 
 app.set('view engine', 'pug');
 app.set('views', path.join(__dirname, 'views'));
+app.locals.stripePublishableKey = getStripePublishableKey();
+
+const corsOptions = {
+  origin(origin, callback) {
+    const allowedOrigins = getCorsOrigins();
+
+    if (!origin || allowedOrigins.includes(origin.replace(/\/$/, ''))) {
+      return callback(null, true);
+    }
+
+    return callback(new AppError('Not allowed by CORS', 403));
+  },
+  credentials: true,
+};
+
+const cspDirectives = {
+  defaultSrc: ["'self'"],
+  baseUri: ["'self'"],
+  fontSrc: ["'self'", 'https://fonts.gstatic.com', 'data:'],
+  styleSrc: [
+    "'self'",
+    "'unsafe-inline'",
+    'https://fonts.googleapis.com',
+    'https://api.mapbox.com',
+    ...envList(process.env.CSP_STYLE_SRC),
+  ],
+  scriptSrc: [
+    "'self'",
+    'https://js.stripe.com',
+    'https://api.mapbox.com',
+    ...envList(process.env.CSP_SCRIPT_SRC),
+  ],
+  frameSrc: ["'self'", 'https://js.stripe.com'],
+  connectSrc: [
+    "'self'",
+    'https://api.stripe.com',
+    'https://api.mapbox.com',
+    'https://events.mapbox.com',
+    ...envList(process.env.CSP_CONNECT_SRC),
+  ],
+  imgSrc: [
+    "'self'",
+    'data:',
+    'blob:',
+    'https://res.cloudinary.com',
+    'https://lh3.googleusercontent.com',
+    'https://avatars.githubusercontent.com',
+    'https://api.mapbox.com',
+    ...envList(process.env.CSP_IMG_SRC),
+  ],
+};
+
+if (isProduction()) cspDirectives.upgradeInsecureRequests = [];
 
 // 1) GLOBAL MIDDLEWARES
-// Serving static files
-app.use(express.static(path.join(__dirname, 'public')));
-app.use(cors());
+app.use(cors(corsOptions));
+app.options('*', cors(corsOptions));
 // Set security HTTP headers
-// app.use(helmet());
 app.use(
-  helmet.contentSecurityPolicy({
-    directives: {
-      defaultSrc: ["'self'"],
-      baseUri: ["'self'"],
-      fontSrc: ["'self'", 'https://fonts.gstatic.com', 'data:'],
-
-      styleSrc: ["'self'", "'unsafe-inline'", 'https://fonts.googleapis.com'],
-
-      scriptSrc: ["'self'", 'https://js.stripe.com'],
-
-      frameSrc: ["'self'", 'https://js.stripe.com'],
-
-      connectSrc: [
-        "'self'",
-        'https://api.stripe.com',
-        'ws://localhost:*',
-        'ws://127.0.0.1:*',
-        'http://localhost:*',
-        'http://127.0.0.1:*',
-      ],
-
-      imgSrc: ["'self'", 'data:', 'blob:', 'https://res.cloudinary.com'],
+  helmet({
+    contentSecurityPolicy: {
+      directives: cspDirectives,
     },
   })
 );
+// Serving static files
+app.use(express.static(path.join(__dirname, 'public')));
 
 // Development logging
 if (process.env.NODE_ENV === 'development') {
@@ -108,6 +149,7 @@ app.use('/', viewRouter);
 app.use('/api/v1/tours', tourRouter);
 app.use('/api/v1/users', userRouter);
 app.use('/api/v1/reviews', reviewRouter);
+app.use('/api/v1/bookings', bookingRouter);
 
 // app.all('*', (req, res, next) => {
 //   next(new AppError(`Can't find ${req.originalUrl} on this server!`, 404));

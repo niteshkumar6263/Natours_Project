@@ -19,7 +19,7 @@ const togglePasswordBtns = document.querySelectorAll('.toggle-password');
 const themeToggle = document.getElementById('theme-toggle');
 
 // Load saved theme
-if (localStorage.getItem('theme') === 'dark') {
+if (themeToggle && localStorage.getItem('theme') === 'dark') {
   document.body.classList.add('dark-mode');
   themeToggle.textContent = '☀️';
 }
@@ -78,7 +78,11 @@ if (signUpForm) {
   });
 }
 
-if (logOutBtn) logOutBtn.addEventListener('click', logout);
+if (logOutBtn)
+  logOutBtn.addEventListener('click', e => {
+    e.preventDefault();
+    logout();
+  });
 
 if (userDataForm)
   userDataForm.addEventListener('submit', e => {

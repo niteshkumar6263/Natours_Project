@@ -8,6 +8,7 @@ process.on('uncaughtException', err => {
 });
 
 dotenv.config({ path: './config.env' });
+require('./utils/validateEnv')();
 const app = require('./app');
 
 const DB = process.env.DATABASE.replace(

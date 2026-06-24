@@ -6,13 +6,30 @@ const AppError = require('../utils/appError');
 
 exports.getOverview = catchAsync(async (req, res, next) => {
   // 1) Get tour data from collection
-  const tours = await Tour.find();
+  const search = req.query.search ? req.query.search.trim() : '';
+  const filter = {};
+
+  if (search) {
+    const escapedSearch = search.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+    const searchRegex = new RegExp(escapedSearch, 'i');
+
+    filter.$or = [
+      { name: searchRegex },
+      { summary: searchRegex },
+      { description: searchRegex },
+      { difficulty: searchRegex },
+      { 'startLocation.description': searchRegex },
+    ];
+  }
+
+  const tours = await Tour.find(filter);
 
   // 2) Build template
   // 3) Render that template using tour data from 1)
   res.status(200).render('overview', {
-    title: 'All Tours',
+    title: search ? `Search results for ${search}` : 'All Tours',
     tours,
+    searchQuery: search,
   });
 });
 

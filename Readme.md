@@ -148,7 +148,7 @@ npm start
 Server will start on:
 
 ```
-http://127.0.0.1:3000
+HOST_URL from config.env
 ```
 
 ---

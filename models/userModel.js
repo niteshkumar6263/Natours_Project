@@ -28,15 +28,38 @@ const userSchema = new mongoose.Schema({
     enum: ['user', 'guide', 'lead-guide', 'admin'],
     default: 'user',
   },
+  authProvider: {
+    type: String,
+    enum: ['local', 'google', 'github'],
+    default: 'local',
+  },
+  googleId: {
+    type: String,
+    select: false,
+  },
+  githubId: {
+    type: String,
+    select: false,
+  },
   password: {
     type: String,
-    required: [true, 'Please provide a password'],
+    required: [
+      function() {
+        return this.authProvider === 'local';
+      },
+      'Please provide a password',
+    ],
     minlength: 8,
     select: false,
   },
   passwordConfirm: {
     type: String,
-    required: [true, 'Please confirm your password'],
+    required: [
+      function() {
+        return this.authProvider === 'local';
+      },
+      'Please confirm your password',
+    ],
     validate: {
       validator: function(el) {
         return el === this.password;
@@ -55,7 +78,7 @@ const userSchema = new mongoose.Schema({
 });
 
 userSchema.pre('save', async function() {
-  if (!this.isModified('password')) return;
+  if (!this.password || !this.isModified('password')) return;
 
   this.password = await bcrypt.hash(this.password, 12);
 

@@ -30,8 +30,9 @@ export const logout = async () => {
     const res = await axios({
       method: 'GET',
       url: '/api/v1/users/logout',
+      withCredentials: true,
     });
-    if ((res.data.status = 'success')) location.reload(true);
+    if (res.data.status === 'success') location.assign('/');
   } catch (err) {
     console.log(err.response);
     showAlert('error', 'Error logging out! Try again.');

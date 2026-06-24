@@ -1,10 +1,21 @@
 /* eslint-disable */
 import axios from 'axios';
 import { showAlert } from './alerts';
-const stripe = Stripe('pk_test_BUkd0ZXAj6m0q0jMyRgBxNns00PPtgvjjr');
+
+const getStripe = () => {
+  const publishableKey = document.body.dataset.stripePublishableKey;
+
+  if (!publishableKey) {
+    throw new Error('Stripe publishable key is not configured.');
+  }
+
+  return Stripe(publishableKey);
+};
 
 export const bookTour = async tourId => {
   try {
+    const stripe = getStripe();
+
     // 1) Get checkout session from API
     const session = await axios(`/api/v1/bookings/checkout-session/${tourId}`);
     console.log(session);
